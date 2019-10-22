@@ -11,6 +11,7 @@
     <title>$Title$</title>
   </head>
   <body>
-  $END$
+  <br> 1: Hello!
+  <br> 2: ${msg}
   </body>
 </html>
