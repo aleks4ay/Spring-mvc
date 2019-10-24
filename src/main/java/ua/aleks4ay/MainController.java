@@ -1,17 +1,25 @@
 package ua.aleks4ay;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ua.aleks4ay.dao.UserDAO;
 import ua.aleks4ay.model.User;
 
+import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.*;
 
 @Controller
 public class MainController {
 
-    List<User> users = new ArrayList<User>();
+    @Autowired
+    private UserDAO userDAO;
+
+//    private static List<User> users = new ArrayList<User>();
 
     @GetMapping("/")
     /*public String view() {
@@ -48,15 +56,17 @@ public class MainController {
 
 
     @GetMapping("/users")
-    public String getUsers(Model model) {
-//        users.add(new User("John", "Smith", "J_Smith@google.com"));
-//        users.add(new User("Nik", "Jagger", "NJ@google.com"));
-        model.addAttribute("users", users);
+    public String getUsers(Model model) throws SQLException {
+//      1.  users.add(new User("John", "Smith", "J_Smith@google.com"));
+//      1.  users.add(new User("Nik", "Jagger", "NJ@google.com"));
+//      2.  model.addAttribute("users", users);
+        model.addAttribute("users", userDAO.getAll());
         return "/users";
     }
 
     @GetMapping("/users/new")
-    public String getSignUp() {
+    public String getSignUp(Model model) {
+        model.addAttribute("user", new User());
         return "/sign_up";
     }
 
@@ -72,9 +82,12 @@ public class MainController {
 */
 
 // ------------- 2. use Spring-way -------------------------------------
-@PostMapping("/users/new")
-public String signUp(@ModelAttribute User user) {
-    users.add(user);
-    return "redirect:/users";
-}
+    @PostMapping("/users/new")
+    public String signUp(@ModelAttribute @Valid User user, BindingResult result) {
+        if (result.hasErrors()) {
+            return "/sign_up";
+        }
+//        users.add(user);
+        return "redirect:/users";
+    }
 }
